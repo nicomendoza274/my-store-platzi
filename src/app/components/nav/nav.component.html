@@ -32,7 +32,8 @@
       </ul>
     </nav>
     <div class="info">
-      <div class="account">nicolas@nicolas.com</div>
+      <button (click)="onLoginAndGet()">Login</button>
+      <div class="account" *ngIf="profile">{{profile?.email}}</div>
       <div class="cart">
         <a href="">
           <img src="./assets/svg/icon_shopping_cart.svg" alt="logo">
