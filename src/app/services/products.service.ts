@@ -13,19 +13,28 @@ import { environment } from '../../environments/environment'
 })
 export class ProductsService {
 
-  private apiURL = `${environment.API_URL}/api/products`;
+  private apiURL = `${environment.API_URL}/api`;
 
   constructor(
     private http: HttpClient
   ) { }
 
-  getAllProducts(limit?: number, offset?:number){
+  getByCategory(categoryId: string, limit?: number, offset?:number){
     let params = new HttpParams();
     if (limit && offset){
       params = params.set('limit', limit);
       params = params.set('offset', offset);
     }
-    return this.http.get<Product[]>(this.apiURL, { params, context: checkTime() })
+    return this.http.get<Product[]>(`${this.apiURL}/categories/${categoryId}/products`, { params })
+  }
+
+  getAll(limit?: number, offset?:number){
+    let params = new HttpParams();
+    if (limit && offset){
+      params = params.set('limit', limit);
+      params = params.set('offset', offset);
+    }
+    return this.http.get<Product[]>(`${this.apiURL}/products`, { params, context: checkTime() })
       .pipe(
         retry(3),
         map(products => products.map(item => {
@@ -51,9 +60,8 @@ export class ProductsService {
       )
   }
 
-
   getProduct(id:string){
-    return this.http.get<Product>(`${this.apiURL}/${id}`)
+    return this.http.get<Product>(`${this.apiURL}/products/${id}`)
       .pipe(
         catchError((error: HttpErrorResponse) =>{
           if (error.status === HttpStatusCode.InternalServerError){
@@ -70,23 +78,22 @@ export class ProductsService {
       )
   }
 
-
   getProductsByPage(limit: number, offset:number){
-    return this.http.get<Product[]>(`${this.apiURL}`, {
+    return this.http.get<Product[]>(`${this.apiURL}/products`, {
       params: {limit, offset}
     });
   }
 
   create(dto: CreateProductDTO){
-    return this.http.post<Product>(this.apiURL, dto);
+    return this.http.post<Product>(`${this.apiURL}/products`, dto);
   }
 
   update(id:string, dto:UpdateProductDTO){
-    return this.http.put<Product>(`${this.apiURL}/${id}`, dto);
+    return this.http.put<Product>(`${this.apiURL}/products/${id}`, dto);
   }
 
   detelete(id:string){
-    return this.http.delete<boolean>(`${this.apiURL}/${id}`);
+    return this.http.delete<boolean>(`${this.apiURL}/products/${id}`);
   }
 
 }
