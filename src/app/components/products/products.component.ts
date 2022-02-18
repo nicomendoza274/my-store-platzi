@@ -16,6 +16,12 @@ export class ProductsComponent {
   myShoppingCart: Product[];
   total = 0;
   @Input() products: Product[] = [];
+  // @Input() productId: string | null = null;
+  @Input() set productId(id: string | null){
+    if (id){
+      this.onShowDetail(id);
+    }
+  };
   @Output() loadMore = new EventEmitter();
   showProductDetail = false;
   productChosen: Product = {
@@ -52,9 +58,11 @@ export class ProductsComponent {
 
   onShowDetail(id: string){
     this.statusDetail = 'loading';
-    this.productsService.getProduct(id)
+    if (!this.showProductDetail){
+      this.showProductDetail = true;
+    }
+    this.productsService.getOne(id)
     .subscribe(data =>{
-        this.toggleProductDetail();
         this.productChosen = data;
         this.statusDetail = 'success';
       }, errorMsg => {
@@ -63,19 +71,19 @@ export class ProductsComponent {
       })
   }
 
-  readAndUpdate(id: string){
-    this.productsService.getProductAndupdate(id, {title: 'change'})
-      .subscribe(data => {
-        console.log(data);
-      });
+  // readAndUpdate(id: string){
+  //   this.productsService.getProductAndupdate(id, {title: 'change'})
+  //     .subscribe(data => {
+  //       console.log(data);
+  //     });
 
-    this.productsService.fetchReadAndUpdate(id, {title: 'change'})
-    .subscribe(response => {
-      const product = response[0];
-      const update = response[1];
-    })
+  //   this.productsService.fetchReadAndUpdate(id, {title: 'change'})
+  //   .subscribe(response => {
+  //     const product = response[0];
+  //     const update = response[1];
+  //   })
 
-  }
+  // }
 
   createNewProduct(){
     const product: CreateProductDTO = {

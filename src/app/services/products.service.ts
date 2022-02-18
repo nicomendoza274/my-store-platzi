@@ -46,21 +46,14 @@ export class ProductsService {
       );
   }
 
-  fetchReadAndUpdate(id: string, dto:UpdateProductDTO) {
-    return zip(
-      this.getProduct(id),
-      this.update(id, dto)
-    );
-  }
+  // fetchReadAndUpdate(id: string, dto:UpdateProductDTO) {
+  //   return zip(
+  //     this.getProduct(id),
+  //     this.update(id, dto)
+  //   );
+  // }
 
-  getProductAndupdate(id: string, dto:UpdateProductDTO){
-    return this.getProduct(id)
-      .pipe(
-        switchMap((product) => this.update(product.id, dto))
-      )
-  }
-
-  getProduct(id:string){
+  getOne(id:string){
     return this.http.get<Product>(`${this.apiURL}/products/${id}`)
       .pipe(
         catchError((error: HttpErrorResponse) =>{
@@ -77,6 +70,15 @@ export class ProductsService {
         })
       )
   }
+
+
+  getProductAndupdate(id: string, dto:UpdateProductDTO){
+    return this.getOne(id)
+      .pipe(
+        switchMap((product) => this.update(product.id, dto))
+      )
+  }
+
 
   getProductsByPage(limit: number, offset:number){
     return this.http.get<Product[]>(`${this.apiURL}/products`, {
