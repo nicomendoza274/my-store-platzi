@@ -1,52 +1,23 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { HomeComponent } from './pages/home/home.component';
-import { NotFoundComponent } from './pages/not-found/not-found.component';
-import { CategoryComponent } from './pages/category/category.component';
-import { MyCartComponent } from './pages/my-cart/my-cart.component';
-import { LoginComponent } from './pages/login/login.component';
-import { RegisterComponent } from './pages/register/register.component';
-import { RecoveryComponent } from './pages/recovery/recovery.component';
-import { ProfileComponent } from './pages/profile/profile.component';
-import { ProductDetailComponent } from './pages/product-detail/product-detail.component';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
+
+import { NotFoundComponent } from './not-found/not-found.component';
+import { CustomPreloadService } from './services/custom-preload.service'
+import { QuicklinkStrategy } from 'ngx-quicklink';
+import { AdminGuard } from './guards/admin.guard'
 
 const routes: Routes = [
   {
     path: '',
-    redirectTo: '/home',
-    pathMatch: 'full'
+    loadChildren: () => import('./website/website.module').then(m => m.WebsiteModule),
+    data: {
+      preload: true,
+    }
   },
   {
-    path: 'home',
-    component: HomeComponent
-  },
-  {
-    path: 'category/:id',
-    component: CategoryComponent
-  },
-  {
-    path: 'product/:id',
-    component: ProductDetailComponent
-  },
-  {
-    path: 'login',
-    component: LoginComponent
-  },
-  {
-    path: 'my-cart',
-    component: MyCartComponent
-  },
-  {
-    path: 'register',
-    component: RegisterComponent
-  },
-  {
-    path: 'recovery',
-    component: RecoveryComponent
-  },
-  {
-    path: 'profile',
-    component: ProfileComponent
+    path: 'cms',
+    canActivate: [AdminGuard],
+    loadChildren: () => import('./cms/cms.module').then(m => m.CmsModule),
   },
   {
     path: '**',
@@ -55,7 +26,9 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  imports: [RouterModule.forRoot(routes)],
+  imports: [RouterModule.forRoot(routes, {
+    preloadingStrategy: QuicklinkStrategy
+  })],
   exports: [RouterModule]
 })
 export class AppRoutingModule { }
